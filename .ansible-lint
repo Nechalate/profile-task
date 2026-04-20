@@ -1,0 +1,19 @@
+---
+exclude_paths:
+  - roles/
+  - .git/
+skip_list:
+  - fqcn-builtins
+  - fqcn[action]
+  - name[casing]
+  - name[missing]
+  - var-naming[no-role-prefix]
+  - yaml[octal-values]
+  - yaml[line-length]
+  - jinja[spacing]
+  - risky-file-permissions
+  - no-changed-when
+  - no-handler
+  - no-free-form
+  - schema[meta]
+  - yaml[truthy]

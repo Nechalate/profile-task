@@ -1,0 +1,88 @@
+---
+# Для предотвращения падения при --check в файлы ролей nginx и postgresql были внесены изменения.
+- name: Настройка NTP
+  hosts: ntp
+  become: yes
+  tags:
+    - ntp
+    - chrony
+  roles:
+    - role: chrony
+
+- name: Настройка Nginx
+  hosts: app
+  become: yes
+  tags:
+    - app
+    - nginx
+  roles:
+    - role: nginx
+  post_tasks:
+    - name: Ensure nginx user exists
+      user:
+        name: nginx
+        system: yes
+        create_home: no
+        shell: /sbin/nologin
+
+    - name: Создать директорию для nginx pid
+      file:
+        path: /var/run/nginx
+        state: directory
+        owner: nginx
+        group: nginx
+        mode: '0755'
+      when: not ansible_check_mode
+
+    - name: Правка пути к pid в nginx.conf
+      lineinfile:
+        path: /etc/nginx/nginx.conf
+        regexp: '^pid /var/run/nginx\.pid;'
+        line: 'pid /var/run/nginx/nginx.pid;'
+      when: not ansible_check_mode
+
+    - name: Разместить кастомный index.html
+      template:
+        src: templates/index.html.j2
+        dest: /usr/share/nginx/html/index.html
+        owner: root
+        group: root
+        mode: '0644'
+      tags: nginx_config
+
+    - name: Запустить и включить nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+      when: not ansible_check_mode
+
+- name: Настройка PostgreSQL
+  hosts: db
+  become: yes
+  tags:
+    - db
+    - postgresql
+  roles:
+    - role: postgresql
+
+- name: Сводка Nginx
+  hosts: app
+  gather_facts: no
+  tags:
+    - debug
+    - info
+  tasks:
+    - name: Получить версию nginx
+      command: nginx -v
+      register: nginx_version_raw
+      changed_when: false
+      check_mode: false
+      when: not ansible_check_mode
+
+    - name: Показать сводку
+      debug:
+        msg:
+          - "Nginx version: {{ nginx_version_raw.stderr.split('/')[1] | default('unknown') }}"
+          - "Access log: {{ nginx_log_dir | default('/var/log/nginx') }}/access.log"
+          - "Error log: {{ nginx_log_dir | default('/var/log/nginx') }}/error.log"

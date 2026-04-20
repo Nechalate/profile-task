@@ -1,0 +1,12 @@
+---
+roles:
+  - name: chrony
+    src: ericsysmin.chrony
+
+  - name: nginx
+    src: geerlingguy.nginx
+    version: 3.3.0
+
+  - name: postgresql
+    src: geerlingguy.postgresql
+    version: 4.0.4

@@ -1,0 +1,16 @@
+---
+nginx_remove_default_vhost: true
+
+nginx_vhosts:
+  - listen: "80 default_server"
+    server_name: "_"
+    root: "/usr/share/nginx/html"
+    index: "index.html index.htm"
+    extra_parameters: |
+      location / {
+          try_files $uri $uri/ =404;
+      }
+
+nginx_service_manage: false
+nginx_service_state: "{{ 'started' if not ansible_check_mode else 'stopped' }}"
+nginx_service_enabled: "{{ 'yes' if not ansible_check_mode else 'no' }}"
