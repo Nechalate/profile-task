@@ -4,8 +4,10 @@
 
 1. Клонирование репозитория.
 
+```bash
 git clone https://github.com/Nechalate/profile-task.git
 cd ansible-ntp-app-db
+```
 
 2. Роли установлены через Ansible Galaxy.
 
@@ -15,7 +17,9 @@ Ansible Galaxy - galaxy.ansible.com
 
 Установка ролей через файл requirements:
 
+```bash
 ansible-galaxy install -r requirements.yml -p ./roles
+```
 
 3. Настройка инвентаря.
 
@@ -32,24 +36,33 @@ ntp:
 
 4. Проверьте соединения до ваших серверов.
 
+```bash
 ansible all -i inventory/hosts.yml -m ping --become
+```
 
 5. Запустите плейбук в режиме проверки. 
 
+```bash
 ansible-playbook -i inventory/hosts.yml site.yml --check --diff
+```
 
 6. Установка пакетов на сервера.
 
+```bash
 ansible-playbook -i inventory/hosts.yml site.yml
+```
 
 Если вам нужно развернуть отдельную роль укажите её командой:
 
+```bash
 ansible-playbook -i inventory/hosts.yml site.yml --tags <группа к которой принадлежит сервер>
+```
 
 Пример:
 
+```bash
 ansible-playbook -i inventory/hosts.yml site.yml --tags ntp
-
+```
 
 ## Проверка работоспособности
 
@@ -57,8 +70,10 @@ ansible-playbook -i inventory/hosts.yml site.yml --tags ntp
 
 Подключитесь по ssh и выполните команду
 
+```bash
 ssh user@<IP>
 chronyc tracking
+```
 
 Ожидаемый вывод:
 
@@ -68,12 +83,15 @@ Leap status : Normal
 
 Выволните команду curl
 
+```bash
 curl http://<IP>
+```
 
 Или зайдите в ваш браузер, и войдите по ссылке:
+
 http://<IP>
 
-Ожидаемый результат:
+Ожидаемый результат
 
 В терминале:
 
@@ -87,18 +105,24 @@ Html код страницы с указанием имени хоста и ай
 
 Подключитесь по ssh и напишите несколько команд:
 
+```bash
 sudo -u postgres psql -c "SELECT version();"
+```
 
 Ожидаемый вывод:
 
 PostgreSQL 13.23
 
+```bash
 sudo cat /var/lib/pgsql/data/pg_hba.conf | grep -E "127.0.0.1|::1"
+```
 
 Ожидаемый вывод:
 
+```bash
 host all all 127.0.0.1/32   md5 
 host all all ::1/128   md5 
+```
 
 ## Внесённые изменения
 
@@ -132,7 +156,9 @@ Handlers
 
 ## Запуск линтера
 
+```bash
 ansible-lint site.yml
+```
 
 Ожидаемый результат:
 
@@ -140,6 +166,7 @@ Passing
 
 ## Очистка установленных пакетов
 
+```bash
 sudo systemctl stop chronyd nginx postgresql-13 2>/dev/null || true
 sudo systemctl disable chronyd nginx postgresql-13 2>/dev/null || true
 
@@ -155,3 +182,4 @@ sudo userdel -r postgres 2>/dev/null || true
 sudo dnf clean all
 
 rpm -qa | grep -E "chrony|nginx|postgresql"
+```
