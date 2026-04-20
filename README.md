@@ -21,12 +21,14 @@ ansible-galaxy install -r requirements.yml -p ./roles
 
 Отредактируйте inventory/hosts.yml, указав IP адреса и имена пользователей ваших серверов.
 
+```yaml
 ntp:
   hosts:
     ntp-server:
       ansible_host: <IP-адрес>
       ansible_user: <Имя пользователя>
       ansible_ssh_private_key_file: ~/.ssh/id_rsa
+```
 
 4. Проверьте соединения до ваших серверов.
 
