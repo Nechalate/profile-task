@@ -111,7 +111,9 @@ sudo -u postgres psql -c "SELECT version();"
 
 Ожидаемый вывод:
 
+```bash
 PostgreSQL 13.23
+```
 
 ```bash
 sudo cat /var/lib/pgsql/data/pg_hba.conf | grep -E "127.0.0.1|::1"
